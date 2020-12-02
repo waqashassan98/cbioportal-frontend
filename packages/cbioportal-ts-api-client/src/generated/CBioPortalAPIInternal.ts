@@ -1,4 +1,5 @@
 import * as request from "superagent";
+import * as pako from "pako";
 
 type CallbackHandler = (err: any, res ? : request.Response) => void;
 export type AlterationEnrichment = {
@@ -2932,6 +2933,7 @@ export default class CBioPortalAPIInternal {
         let queryParameters: any = {};
         let headers: any = {};
         let form: any = {};
+        this.foo(parameters['studyViewFilter']);
         return new Promise(function(resolve, reject) {
             headers['Accept'] = 'application/json';
             headers['Content-Type'] = 'application/json';
@@ -2960,6 +2962,22 @@ export default class CBioPortalAPIInternal {
 
         });
     };
+
+    async foo(body: any) {
+        let headers: any = {};
+        headers['Accept'] = 'application/json';
+        headers['Content-Type'] = 'application/json';
+        headers['Content-Encoding'] = 'gzip';
+
+        const compressed = pako.gzip(JSON.stringify(body));
+
+        const resp = await fetch("http://localhost:8080/api/filtered-samples/fetch", 
+            {method: 'POST', headers: headers, body: compressed.buffer,  mode: "no-cors"}
+        );
+
+        console.log(resp)
+
+    }
 
     /**
      * Fetch sample IDs by study view filter
