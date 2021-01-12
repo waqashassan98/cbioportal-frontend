@@ -46,7 +46,7 @@ const MAXIMUM_ALLOWED_GENES = 100;
 
 const CHART_BAR_WIDTH = 10;
 
-const ALLOWED_CNA_TYPES = ['AMP', 'HOMDEL'];
+const ALLOWED_CNA_TYPES = ['AMP', 'DEEPDEL'];
 
 @observer
 export default class GeneBarPlot extends React.Component<
@@ -107,11 +107,11 @@ export default class GeneBarPlot extends React.Component<
             // Add alteration to genes in case when both AMP and DEL both show togehter in table
             if (this.props.showCNAInTable) {
                 genes = _.flatMap(this.selectedGenes, geneWithAlteration => {
-                    //if no alteration sepcified include both AMP and HOMDEL
+                    //if no alteration sepcified include both AMP and DEEPDEL
                     if (geneWithAlteration.alterations === false) {
                         return [
                             geneWithAlteration.gene + ': AMP',
-                            geneWithAlteration.gene + ': HOMDEL',
+                            geneWithAlteration.gene + ': DEEPDEL',
                         ];
                     }
 
@@ -606,7 +606,7 @@ class GenesSelection extends React.Component<IGeneSelectionProps, {}> {
                                             this.props.containerType ===
                                             AlterationContainerType.MUTATION
                                                 ? ''
-                                                : 'except AMP and HOMDEL'
+                                                : 'except AMP and DEEPDEL'
                                         } is not allowed`}
                                     </span>
                                 </strong>

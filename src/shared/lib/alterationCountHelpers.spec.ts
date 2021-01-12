@@ -297,8 +297,8 @@ describe('alterationCountHelpers', () => {
                     alterationTypeCounts: {
                         mutated: 2,
                         amp: 0,
-                        homdel: 0,
-                        hetloss: 0,
+                        deepdel: 0,
+                        shallowdel: 0,
                         gain: 0,
                         fusion: 0,
                         mrnaExpressionHigh: 0,
@@ -348,7 +348,7 @@ describe('alterationCountHelpers', () => {
             alterationsBySampleId['VzA0MDpjaG9sX251c18yMDEy'] = [
                 {
                     uniqueSampleKey: 'VzA0MDpjaG9sX251c18yMDEy',
-                    alterationSubType: 'homdel',
+                    alterationSubType: 'deepdel',
                     alterationType: 'COPY_NUMBER_ALTERATION',
                 },
             ];
@@ -367,8 +367,8 @@ describe('alterationCountHelpers', () => {
                     alterationTypeCounts: {
                         mutated: 2,
                         amp: 1,
-                        homdel: 1,
-                        hetloss: 0,
+                        deepdel: 1,
+                        shallowdel: 0,
                         gain: 0,
                         fusion: 1,
                         mrnaExpressionHigh: 0,
@@ -423,8 +423,8 @@ describe('alterationCountHelpers', () => {
                     alterationTypeCounts: {
                         mutated: 2,
                         amp: 0,
-                        homdel: 0,
-                        hetloss: 0,
+                        deepdel: 0,
+                        shallowdel: 0,
                         gain: 0,
                         fusion: 0,
                         mrnaExpressionHigh: 0,

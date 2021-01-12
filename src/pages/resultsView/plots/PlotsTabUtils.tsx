@@ -36,7 +36,7 @@ import {
 } from '../../../shared/components/oncoprint/DataUtils';
 import {
     CNA_COLOR_AMP,
-    CNA_COLOR_HOMDEL,
+    CNA_COLOR_DEEPDEL,
     DEFAULT_GREY,
     LIGHT_GREY,
     MUT_COLOR_FUSION,
@@ -1735,7 +1735,7 @@ export const noMutationAppearance = {
 const cnaToAppearance = {
     '-2': {
         legendLabel: 'Deep Deletion',
-        stroke: CNA_COLOR_HOMDEL,
+        stroke: CNA_COLOR_DEEPDEL,
         strokeOpacity: 1,
     },
     '-1': {

@@ -869,7 +869,7 @@ export default abstract class ComparisonStore {
         },
     });
 
-    readonly copyNumberHomdelEnrichmentData = remoteData<
+    readonly copyNumberDeepdelEnrichmentData = remoteData<
         AlterationEnrichment[]
     >({
         await: () => [this.copyNumberEnrichmentDataRequestGroups],
@@ -910,7 +910,7 @@ export default abstract class ComparisonStore {
     public readonly copyNumberEnrichmentData = makeEnrichmentDataPromise({
         storeForExcludingQueryGenes: this.resultsViewStore,
         await: () => [
-            this.copyNumberHomdelEnrichmentData,
+            this.copyNumberDeepdelEnrichmentData,
             this.copyNumberAmpEnrichmentData,
             this.selectedStudyCopyNumberEnrichmentProfileMap,
         ],
@@ -922,13 +922,13 @@ export default abstract class ComparisonStore {
                 (d as CopyNumberEnrichment).value = 2;
                 return d as CopyNumberEnrichment;
             });
-            const homdelData = this.copyNumberHomdelEnrichmentData.result!.map(
+            const deepdelData = this.copyNumberDeepdelEnrichmentData.result!.map(
                 d => {
                     (d as CopyNumberEnrichment).value = -2;
                     return d as CopyNumberEnrichment;
                 }
             );
-            return Promise.resolve(ampData.concat(homdelData));
+            return Promise.resolve(ampData.concat(deepdelData));
         },
     });
 

@@ -387,7 +387,7 @@ export function buildDefaultOQLProfile(
                 break;
             case AlterationTypeConstants.COPY_NUMBER_ALTERATION:
                 default_oql_uniq['AMP'] = true;
-                default_oql_uniq['HOMDEL'] = true;
+                default_oql_uniq['DEEPDEL'] = true;
                 break;
             case AlterationTypeConstants.MRNA_EXPRESSION:
                 default_oql_uniq['EXP>=' + zScoreThreshold] = true;

@@ -1689,7 +1689,7 @@ describe('StudyViewUtils', () => {
 
     describe('getCNAByAlteration', () => {
         it('return proper string from proper alteration', () => {
-            assert.isTrue(getCNAByAlteration(-2) === 'HOMDEL');
+            assert.isTrue(getCNAByAlteration(-2) === 'DeepDel');
             assert.isTrue(getCNAByAlteration(2) === 'AMP');
         });
 
