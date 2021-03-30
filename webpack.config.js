@@ -218,10 +218,7 @@ var config = {
                         loader: 'ts-loader',
                         options: {
                             transpileOnly:
-                                isDev ||
-                                isTest ||
-                                (process.env.NETLIFY &&
-                                    process.env.CONTEXT !== 'production'),
+                                isDev || isTest || process.env.NETLIFY,
                         },
                     },
                 ],
