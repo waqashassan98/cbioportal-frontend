@@ -642,6 +642,7 @@ export default class ResultsViewPage extends React.Component<
                         <LoadingIndicator
                             isLoading={true}
                             center={true}
+                            noFade={true}
                             size={'big'}
                         ></LoadingIndicator>
                     )}
@@ -703,10 +704,8 @@ export default class ResultsViewPage extends React.Component<
                                 {// we don't show the result tabs if we don't have valid query
                                 this.showTabs &&
                                     !this.resultsViewPageStore.genesInvalid &&
-                                    !this.resultsViewPageStore.isQueryInvalid &&
-                                    this.resultsViewPageStore
-                                        .customDriverAnnotationReport
-                                        .isComplete && (
+                                    !this.resultsViewPageStore
+                                        .isQueryInvalid && (
                                         <MSKTabs
                                             key={this.urlWrapper.hash}
                                             activeTabId={
@@ -739,7 +738,12 @@ export default class ResultsViewPage extends React.Component<
             !this.resultsViewPageStore.studies.isComplete
         ) {
             return (
-                <LoadingIndicator isLoading={true} center={true} size={'big'} />
+                <LoadingIndicator
+                    isLoading={true}
+                    center={true}
+                    noFade={true}
+                    size={'big'}
+                />
             );
         }
 
