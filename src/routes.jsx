@@ -70,7 +70,7 @@ function tabParamValidator(tabEnum) {
  * @param location
  */
 function customTabParamValidator(location) {
-    var regex = /results\/customTab\d+/;
+    var regex = /(results)|(patient)\/customTab\d+/;
     return location.pathname.match(regex) !== null;
 }
 
