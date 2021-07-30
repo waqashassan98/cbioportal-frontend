@@ -5,6 +5,7 @@ import GenesetsJsTree from './GenesetsJsTree';
 import GenesetsHierarchyFilterForm, {
     validPercentile,
 } from './GenesetsHierarchyFilterForm';
+import AppConfig from 'appConfig';
 
 export interface GenesetsHierarchySelectorProps {
     initialSelection: string[];
@@ -19,12 +20,17 @@ export default class GenesetsHierarchySelector extends React.Component<
     {}
 > {
     @observable percentile: validPercentile = 75;
-    @observable pvalueThreshold = 0.05;
-    @observable scoreThreshold = 0.5;
+    @observable pvalueThreshold = AppConfig.serverConfig.skin_p_value;
+    @observable scoreThreshold = AppConfig.serverConfig.skin_gsva_score;
+    @observable showGsva = AppConfig.serverConfig.skin_show_gsva;
     @observable searchValue = '';
 
     constructor(props: GenesetsHierarchySelectorProps) {
         super(props);
+
+        console.info(this.pvalueThreshold);
+        console.info(this.scoreThreshold);
+        console.info(this.showGsva);
         makeObservable(this);
         this.updateSelectionParameters = this.updateSelectionParameters.bind(
             this
