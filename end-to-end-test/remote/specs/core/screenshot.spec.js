@@ -3,7 +3,7 @@
 
 const {
     waitForOncoprint,
-    setSettingsMenuOpen,
+    setResultsPageSettingsMenuOpen,
     setOncoprintMutationsMenuOpen,
     checkElementWithMouseDisabled,
     goToUrlAndSetLocalStorage,
@@ -99,7 +99,12 @@ function runResultsTestSuite(prefix, options = {}) {
         assertScreenShotMatch(res);
     });
 
-    it(`${prefix} comparison tab alteration enrichments sample mode`, function() {
+    it.skip(`${prefix} comparison tab mutation enrichments`, function() {
+        $('.comparisonTabSubTabs .tabAnchor_mutations').click();
+        $(
+            'div[data-test="GroupComparisonMutationEnrichments"]'
+        ).waitForDisplayed();
+        var res = browser.checkElement('div[data-test="ComparisonTabDiv"]');
         $('.comparisonTabSubTabs .tabAnchor_alterations').click();
         $(
             'div[data-test="GroupComparisonAlterationEnrichments"]'
@@ -114,7 +119,7 @@ function runResultsTestSuite(prefix, options = {}) {
         assertScreenShotMatch(res);
     });
 
-    it(`${prefix} comparison tab alteration enrichments patient mode`, function() {
+    it.skip(`${prefix} comparison tab alteration enrichments patient mode`, function() {
         browser.execute(function() {
             comparisonTab.store.setUsePatientLevelEnrichments(true);
         });
@@ -128,6 +133,10 @@ function runResultsTestSuite(prefix, options = {}) {
                 hide: ['.qtip'],
             }
         );
+        $(
+            'div[data-test="GroupComparisonMutationEnrichments"]'
+        ).waitForDisplayed();
+        var res = browser.checkElement('div[data-test="ComparisonTabDiv"]');
         assertScreenShotMatch(res);
     });
 
@@ -192,7 +201,7 @@ describe('result page screenshot tests', function() {
         goToUrlAndSetLocalStorage(url);
         waitForOncoprint(10000);
     });
-
+    //
     runResultsTestSuite('no session');
 });
 
@@ -363,11 +372,11 @@ describe('results page tabs while excluding unprofiled samples', function() {
             `${CBIOPORTAL_URL}/results/oncoprint?Action=Submit&RPPA_SCORE_THRESHOLD=2.0&Z_SCORE_THRESHOLD=2.0&cancer_study_list=gbm_tcga&case_set_id=gbm_tcga_all&data_priority=0&gene_list=EGFR%250APTEN%250AIDH1%250ATP53&geneset_list=%20&genetic_profile_ids_PROFILE_COPY_NUMBER_ALTERATION=gbm_tcga_gistic&genetic_profile_ids_PROFILE_MRNA_EXPRESSION=gbm_tcga_mrna_median_all_sample_Zscores&genetic_profile_ids_PROFILE_MUTATION_EXTENDED=gbm_tcga_mutations&hide_unprofiled_samples=false&profileFilter=0&tab_index=tab_visualize`
         );
         waitForOncoprint(10000);
-        setSettingsMenuOpen(true);
+        setResultsPageSettingsMenuOpen(true);
         $('input[data-test="HideUnprofiled"]').waitForExist();
         $('input[data-test="HideUnprofiled"]').click();
         waitForOncoprint(10000);
-        setSettingsMenuOpen(false);
+        setResultsPageSettingsMenuOpen(false);
     });
 
     runResultsTestSuite('excluding unprofiled samples', {

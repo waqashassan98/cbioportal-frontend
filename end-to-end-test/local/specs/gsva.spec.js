@@ -80,16 +80,18 @@ describe('gsva feature', function() {
         });
 
         describe('GenesetsHierarchySelector', () => {
-            before(() => {
+            beforeEach(() => {
                 goToUrlAndSetLocalStorage(CBIOPORTAL_URL, true);
                 showGsva();
                 waitForStudyQueryPage();
                 checkTestStudy();
                 checkGSVAprofile();
+                $('button[data-test=GENESET_HIERARCHY_BUTTON]').click();
+                waitForGsvaHierarchyDialog();
             });
 
             it('adds gene set name to entry component from hierachy selector', () => {
-                openGsvaHierarchyDialog();
+                $('*=GO_ATP_DEPENDENT_CHROMATIN_REMODELING').waitForExist();
 
                 var checkBox = $('*=GO_ATP_DEPENDENT_CHROMATIN_REMODELING');
                 checkBox.click();
@@ -110,80 +112,60 @@ describe('gsva feature', function() {
             });
 
             it('filters gene sets with the GSVA score input field', () => {
-                openGsvaHierarchyDialog();
+                var before = $$('*=GO_');
 
                 $('[id=GSVAScore]').setValue('0');
                 $('[id=filterButton]').click();
-                waitForModalUpdate();
 
-                assert.equal($$('*=GO_').length, 5);
+                browser.waitUntil(() => $$('*=GO_').length > before.length);
+                var after = $$('*=GO_');
 
-                // reset state
-                $('[id=GSVAScore]').setValue('0.5');
-                $('[id=filterButton]').click();
-                waitForModalUpdate();
+                assert.equal(after.length, 5);
             });
 
             it('filters gene sets with the search input field', () => {
+                var before = $$('*=GO_');
+
                 $('[id=GSVAScore]').setValue('0');
                 $('[id=filterButton]').click();
-                waitForModalUpdate();
 
-                // note: search inbox hides elements in JTree rather than reload data
-                const hiddenBefore = $$('.jstree-hidden').length;
-                assert(
-                    hiddenBefore == 0,
-                    'The tree should not have hidden elements at this point'
-                );
+                browser.waitUntil(() => $$('*=GO_').length > before.length);
 
                 $('[id=geneset-hierarchy-search]').setValue(
                     'GO_ACYLGLYCEROL_HOMEOSTASIS'
                 );
-                waitForModalUpdate();
-                const hiddenAfter = $$('.jstree-hidden').length;
-                assert.equal(hiddenAfter, 7);
                 assert($('*=GO_ACYLGLYCEROL_HOMEOSTASIS'));
-
-                // reset state
-                $('[id=geneset-hierarchy-search]').setValue('');
-                $('[id=GSVAScore]').setValue('0.5');
-                $('[id=filterButton]').click();
-                waitForModalUpdate();
             });
 
             it('filters gene sets with the gene set pvalue input field', () => {
+                var before = $$('*=GO_');
+
                 $('[id=Pvalue]').setValue('0.0005');
                 $('[id=filterButton]').click();
-                waitForModalUpdate();
+
+                browser.waitUntil(() => $$('*=GO_').length < before.length);
                 var after = $$('*=GO_');
 
-                assert.equal($$('*=GO_').length, 0);
-
-                // reset state
-                $('[id=Pvalue]').setValue('0.05');
-                $('[id=filterButton]').click();
-                waitForModalUpdate();
+                assert.equal(after.length, 0);
             });
 
             it('filters gene sets with the gene set percentile select box', () => {
+                var before = $$('*=GO_');
+
                 var modal = $('div.modal-body');
                 modal.$('.Select-value-label').click();
                 modal.$('.Select-option=100%').click();
                 modal.$('[id=filterButton]').click();
-                waitForModalUpdate();
 
-                assert.equal($$('*=GO_').length, 2);
+                browser.waitUntil(() => $$('*=GO_').length > before.length);
+                var after = $$('*=GO_');
 
-                // reset state
-                modal.$('.Select-value-label').click();
-                modal.$('.Select-option=75%').click();
-                modal.$('[id=filterButton]').click();
-                waitForModalUpdate();
+                assert.equal(after.length, 2);
             });
         });
 
         describe('GenesetVolcanoPlotSelector', () => {
-            before(() => {
+            beforeEach(() => {
                 goToUrlAndSetLocalStorage(CBIOPORTAL_URL, true);
                 showGsva();
                 waitForStudyQueryPage();
@@ -192,7 +174,9 @@ describe('gsva feature', function() {
             });
 
             it('adds gene set name to entry component', () => {
-                openGsvaVolcanoDialog();
+                $('button[data-test=GENESET_VOLCANO_BUTTON]').waitForExist();
+                $('button[data-test=GENESET_VOLCANO_BUTTON]').click();
+                $('div.modal-dialog').waitForExist();
                 // find the GO_ATP_DEPENDENT_CHROMATIN_REMODELING entry and check its checkbox
                 $('span=GO_ATP_DEPENDENT_CHROMATIN_REMODELING').waitForExist();
                 var checkBox = $('span=GO_ATP_DEPENDENT_CHROMATIN_REMODELING')
@@ -220,7 +204,12 @@ describe('gsva feature', function() {
             });
 
             it('selects gene sets from query page text area', () => {
-                openGsvaVolcanoDialog();
+                var textArea = $('[data-test=GENESETS_TEXT_AREA]');
+                textArea.setValue('GO_ATP_DEPENDENT_CHROMATIN_REMODELING');
+
+                $('button[data-test=GENESET_VOLCANO_BUTTON]').click();
+
+                $('div.modal-dialog').waitForExist();
 
                 var checkBox = $('span=GO_ATP_DEPENDENT_CHROMATIN_REMODELING')
                     .$('..')
@@ -232,6 +221,13 @@ describe('gsva feature', function() {
             });
 
             it('reset keeps gene sets from query page text area', () => {
+                var textArea = $('[data-test=GENESETS_TEXT_AREA]');
+                textArea.setValue('GO_ATP_DEPENDENT_CHROMATIN_REMODELING');
+
+                $('button[data-test=GENESET_VOLCANO_BUTTON]').click();
+
+                $('div.modal-dialog').waitForExist();
+
                 var checkBox = $('span=GO_ATP_DEPENDENT_CHROMATIN_REMODELING')
                     .$('..')
                     .$('..')
@@ -243,17 +239,21 @@ describe('gsva feature', function() {
             });
 
             it('searchbox filters gene set list', () => {
+                $('button[data-test=GENESET_VOLCANO_BUTTON]').click();
+
+                $('div.modal-dialog').waitForExist();
+
+                browser.waitUntil(() => $$('span*=GO_').length >= 5);
+
                 const lengthBefore = $$('span*=GO_').length;
-                assert.equal(lengthBefore, 5);
 
                 $('input.tableSearchInput').waitForExist();
                 $('input.tableSearchInput').setValue('GO_ACYL');
 
-                browser.waitUntil(() => $$('span*=GO_').length < lengthBefore, {
-                    timeout: 10000,
-                });
+                browser.waitUntil(() => $$('span*=GO_').length < lengthBefore);
 
                 const lengthAfter = $$('span*=GO_').length;
+
                 assert.equal(lengthAfter, 1);
             });
         });
@@ -579,17 +579,9 @@ const checkGSVAprofile = () => {
     $('[data-test=GENESETS_TEXT_AREA]').waitForExist();
 };
 
-const openGsvaHierarchyDialog = () => {
-    $('button[data-test=GENESET_HIERARCHY_BUTTON]').click();
+const waitForGsvaHierarchyDialog = () => {
     $('div.modal-dialog').waitForExist();
     $('div[data-test=gsva-tree-container] ul').waitForExist();
-    waitForModalUpdate();
-};
-
-const openGsvaVolcanoDialog = () => {
-    $('button[data-test=GENESET_VOLCANO_BUTTON]').waitForExist();
-    $('button[data-test=GENESET_VOLCANO_BUTTON]').click();
-    $('div.modal-dialog').waitForExist();
 };
 
 module.exports = {
@@ -600,7 +592,3 @@ module.exports = {
     plotsTabUrl: plotsTabUrl,
     coexpressionTabUrl: coexpressionTabUrl,
 };
-
-function waitForModalUpdate() {
-    browser.waitUntil(() => $$('.sk-spinner').length === 0, { timeout: 10000 });
-}

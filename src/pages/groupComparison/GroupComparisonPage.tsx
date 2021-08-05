@@ -41,8 +41,7 @@ import _ from 'lodash';
 import { deriveDisplayTextFromGenericAssayType } from 'pages/resultsView/plots/PlotsTabUtils';
 import AlterationEnrichments from './AlterationEnrichments';
 import AlterationEnrichmentTypeSelector from '../../shared/lib/comparison/AlterationEnrichmentTypeSelector';
-import { AlterationFilterMenuSection } from 'pages/groupComparison/GroupComparisonUtils';
-import AppConfig from 'appConfig';
+import { buildAlterationsTabName } from 'shared/lib/comparison/ComparisonStoreUtils';
 
 export interface IGroupComparisonPageProps {
     routing: any;
@@ -175,34 +174,20 @@ export default class GroupComparisonPage extends React.Component<
                                     : ''
                             }
                         >
-                            {(AppConfig.serverConfig
-                                .skin_show_settings_menu && (
-                                <AlterationFilterMenuSection
-                                    store={this.store}
-                                    updateSelectedEnrichmentEventTypes={
-                                        this.store
-                                            .updateSelectedEnrichmentEventTypes
-                                    }
-                                />
-                            )) || (
-                                <AlterationEnrichmentTypeSelector
-                                    classNames={
-                                        styles.inlineAlterationTypeSelectorMenu
-                                    }
-                                    store={this.store}
-                                    updateSelectedEnrichmentEventTypes={
-                                        this.store
-                                            .updateSelectedEnrichmentEventTypes
-                                    }
-                                    showMutations={
-                                        this.store.hasMutationEnrichmentData
-                                    }
-                                    showCnas={this.store.hasCnaEnrichmentData}
-                                    showStructuralVariants={
-                                        this.store.hasStructuralVariantData
-                                    }
-                                />
-                            )}
+                            <AlterationEnrichmentTypeSelector
+                                store={this.store}
+                                updateSelectedEnrichmentEventTypes={
+                                    this.store
+                                        .updateSelectedEnrichmentEventTypes
+                                }
+                                showMutations={
+                                    this.store.hasMutationEnrichmentData
+                                }
+                                showCnas={this.store.hasCnaEnrichmentData}
+                                showStructuralVariants={
+                                    this.store.hasStructuralVariantData
+                                }
+                            />
                             <AlterationEnrichments store={this.store} />
                         </MSKTab>
                     )}

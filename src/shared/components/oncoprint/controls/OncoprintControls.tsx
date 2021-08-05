@@ -1,11 +1,18 @@
 import * as React from 'react';
-import { observer } from 'mobx-react';
+import { observer, Observer } from 'mobx-react';
 import { Button, ButtonGroup } from 'react-bootstrap';
 import CustomDropdown from './CustomDropdown';
 import ConfirmNgchmModal from './ConfirmNgchmModal';
 import ReactSelect from 'react-select1';
 import { MobxPromise } from 'mobxpromise';
-import { action, computed, observable, reaction, makeObservable } from 'mobx';
+import {
+    action,
+    computed,
+    observable,
+    ObservableMap,
+    reaction,
+    makeObservable,
+} from 'mobx';
 import _ from 'lodash';
 import { SortMode } from '../ResultsViewOncoprint';
 import {
@@ -28,16 +35,13 @@ import {
 import OQLTextArea, { GeneBoxType } from '../../GeneSelectionBox/OQLTextArea';
 import autobind from 'autobind-decorator';
 import { SingleGeneQuery } from '../../../lib/oql/oql-parser';
+import DriverAnnotationControls, {
+    IDriverAnnotationControlsHandlers,
+} from '../../../../pages/resultsView/settings/DriverAnnotationControls';
 import AddTracks from 'pages/resultsView/oncoprint/AddTracks';
 import { GenericAssayTrackInfo } from 'pages/studyView/addChartButton/genericAssaySelection/GenericAssaySelection';
-import {
-    IDriverAnnotationControlsHandlers,
-    IDriverAnnotationControlsState,
-} from 'shared/alterationFiltering/AnnotationFilteringSettings';
-import DriverAnnotationControls from 'shared/components/driverAnnotations/DriverAnnotationControls';
 
-export interface IOncoprintControlsHandlers
-    extends IDriverAnnotationControlsHandlers {
+export interface IOncoprintControlsHandlers {
     onSelectColumnType?: (type: 'sample' | 'patient') => void;
     onSelectShowUnalteredColumns: (unalteredColumnsShown: boolean) => void;
     onSelectShowWhitespaceBetweenColumns: (showWhitespace: boolean) => void;
@@ -48,10 +52,19 @@ export interface IOncoprintControlsHandlers
     onSelectShowOqlInLabels?: (show: boolean) => void;
     onSelectShowMinimap: (showMinimap: boolean) => void;
     onSelectDistinguishMutationType: (distinguish: boolean) => void;
+    onSelectDistinguishDrivers: (distinguish: boolean) => void;
     onSelectDistinguishGermlineMutations: (distinguish: boolean) => void;
 
-    onSelectHideVUS: (hide: boolean) => void;
+    onSelectAnnotateOncoKb: (annotate: boolean) => void;
+    onSelectAnnotateHotspots?: (annotate: boolean) => void;
+    onSelectAnnotateCBioPortal: (annotate: boolean) => void;
+    onSelectAnnotateCOSMIC?: (annotate: boolean) => void;
+    onSelectHidePutativePassengers: (hide: boolean) => void;
+    onChangeAnnotateCBioPortalInputValue: (value: string) => void;
     onSelectHideGermlineMutations: (hide: boolean) => void;
+    onChangeAnnotateCOSMICInputValue?: (value: string) => void;
+    onSelectCustomDriverAnnotationBinary?: (s: boolean) => void;
+    onSelectCustomDriverAnnotationTier?: (value: string, s: boolean) => void;
 
     onSelectSortByMutationType: (sort: boolean) => void;
     onSelectSortByDrivers: (sort: boolean) => void;
@@ -74,8 +87,7 @@ export interface IOncoprintControlsHandlers
     onClickZoomIn: () => void;
     onClickZoomOut: () => void;
 }
-export interface IOncoprintControlsState
-    extends IDriverAnnotationControlsState {
+export interface IOncoprintControlsState {
     showUnalteredColumns: boolean;
     showWhitespaceBetweenColumns: boolean;
     showClinicalTrackLegends?: boolean;
@@ -83,12 +95,23 @@ export interface IOncoprintControlsState
     showOqlInLabels?: boolean;
     showMinimap: boolean;
     distinguishMutationType: boolean;
+    distinguishDrivers: boolean;
     distinguishGermlineMutations: boolean;
     sortByMutationType: boolean;
     sortByDrivers: boolean;
     sortByCaseListDisabled: boolean;
+    annotateDriversOncoKb: boolean;
+    annotateDriversOncoKbError: boolean;
+    annotateDriversOncoKbDisabled: boolean;
+    annotateDriversHotspots?: boolean;
+    annotateDriversHotspotsError?: boolean;
+    annotateDriversHotspotsDisabled?: boolean;
+    annotateDriversCBioPortal: boolean;
+    annotateDriversCOSMIC?: boolean;
     hidePutativePassengers: boolean;
+    annotateCBioPortalInputValue: string;
     hideGermlineMutations: boolean;
+    annotateCOSMICInputValue?: string;
 
     sortMode?: SortMode;
     clinicalAttributesPromise?: MobxPromise<ExtendedClinicalAttribute[]>;
@@ -107,6 +130,12 @@ export interface IOncoprintControlsState
     heatmapGeneInputValue?: string;
     hideHeatmapMenu?: boolean;
     ngchmButtonActive?: boolean;
+
+    customDriverAnnotationBinaryMenuLabel?: string;
+    customDriverAnnotationTiersMenuLabel?: string;
+    customDriverAnnotationTiers?: string[];
+    selectedCustomDriverAnnotationTiers?: ObservableMap<string, boolean>;
+    annotateCustomDriverBinary?: boolean;
 
     columnMode?: OncoprintAnalysisCaseType;
 
@@ -338,8 +367,8 @@ export default class OncoprintControls extends React.Component<
                     );
                 break;
             case EVENT_KEY.hidePutativePassengers:
-                this.props.handlers.onSelectHideVUS &&
-                    this.props.handlers.onSelectHideVUS(
+                this.props.handlers.onSelectHidePutativePassengers &&
+                    this.props.handlers.onSelectHidePutativePassengers(
                         !this.props.state.hidePutativePassengers
                     );
                 break;
@@ -372,14 +401,13 @@ export default class OncoprintControls extends React.Component<
     private onCustomDriverTierCheckboxClick(
         event: React.MouseEvent<HTMLInputElement>
     ) {
-        const tier = (event.target as HTMLInputElement).value;
         this.props.handlers.onSelectCustomDriverAnnotationTier &&
             this.props.handlers.onSelectCustomDriverAnnotationTier(
-                tier,
+                (event.target as HTMLInputElement).value,
                 !(
                     this.props.state.selectedCustomDriverAnnotationTiers &&
                     this.props.state.selectedCustomDriverAnnotationTiers.get(
-                        tier
+                        (event.target as HTMLInputElement).value
                     )
                 )
             );
@@ -767,7 +795,6 @@ export default class OncoprintControls extends React.Component<
                                 } as Partial<IDriverAnnotationControlsHandlers>,
                                 this.props.handlers
                             )}
-                            resultsView={true}
                         />
                     </div>
 
@@ -836,7 +863,7 @@ export default class OncoprintControls extends React.Component<
                             }}
                             className="btn btn-primary"
                             onClick={() => {
-                                store.isSettingsMenuVisible = !store.isSettingsMenuVisible;
+                                store.resultsPageSettingsVisible = !store.resultsPageSettingsVisible;
                             }}
                         >
                             <i className="fa fa-sliders" />

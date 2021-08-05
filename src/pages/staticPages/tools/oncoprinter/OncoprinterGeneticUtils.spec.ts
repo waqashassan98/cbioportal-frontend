@@ -1,7 +1,32 @@
 import { assert } from 'chai';
-import { parseGeneticInput } from './OncoprinterGeneticUtils';
+import OncoprinterStore from './OncoprinterStore';
+import {
+    initDriverAnnotationSettings,
+    parseGeneticInput,
+} from './OncoprinterGeneticUtils';
+import AppConfig from 'appConfig';
 
 describe('OncoprinterGeneticUtils', () => {
+    describe('initDriverAnnotationSettings', () => {
+        it('initializes correctly with custom drivers', () => {
+            // only custom drivers selected as annotation source
+            const store = { existCustomDrivers: true } as OncoprinterStore;
+            const settings = initDriverAnnotationSettings(store);
+            assert.isTrue(settings.customBinary);
+            assert.isFalse(settings.oncoKb);
+            assert.isFalse(settings.cbioportalCount);
+        });
+        it('initializes correctly without custom drivers', () => {
+            // only oncokb selected as annotation source
+            AppConfig.serverConfig.show_oncokb = true;
+            const store = { existCustomDrivers: false } as OncoprinterStore;
+            const settings = initDriverAnnotationSettings(store);
+            assert.isTrue(settings.oncoKb);
+            assert.isFalse(settings.customBinary);
+            assert.isFalse(settings.cbioportalCount);
+        });
+    });
+
     describe('parseGeneticInput', () => {
         it('skips header line', () => {
             assert.deepEqual(

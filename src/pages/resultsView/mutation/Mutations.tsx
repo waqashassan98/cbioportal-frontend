@@ -272,6 +272,6 @@ export default class Mutations extends React.Component<
 
     @action.bound
     protected onClickSettingMenu(visible: boolean) {
-        this.props.store.isSettingsMenuVisible = visible;
+        this.props.store.resultsPageSettingsVisible = visible;
     }
 }

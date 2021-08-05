@@ -27,8 +27,7 @@ yarn.lock
 .prettierignore
 .DS_Store
 .gitignore
-*.toml
-*.maf
+.kodiak.toml
 *properties
 *.seg
 end-to-end-test/local/studies/**

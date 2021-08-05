@@ -360,7 +360,6 @@ export default class CustomCaseSelection extends React.Component<
                                 className="alert alert-warning"
                                 role="alert"
                                 style={{ marginTop: '10px', marginBottom: '0' }}
-                                data-test="ValidationResultWarning"
                             >
                                 {warning.message.message}
                             </div>

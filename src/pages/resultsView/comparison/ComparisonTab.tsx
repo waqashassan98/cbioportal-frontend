@@ -33,9 +33,7 @@ import AlterationEnrichments from 'pages/groupComparison/AlterationEnrichments';
 import AlterationEnrichmentTypeSelector from 'shared/lib/comparison/AlterationEnrichmentTypeSelector';
 import GenericAssayEnrichments from 'pages/groupComparison/GenericAssayEnrichments';
 import { deriveDisplayTextFromGenericAssayType } from '../plots/PlotsTabUtils';
-import styles from 'pages/resultsView/comparison/styles.module.scss';
-import AppConfig from 'appConfig';
-import { AlterationFilterMenuSection } from 'pages/groupComparison/GroupComparisonUtils';
+import { buildAlterationsTabName } from 'shared/lib/comparison/ComparisonStoreUtils';
 
 export interface IComparisonTabProps {
     urlWrapper: ResultsViewURLWrapper;
@@ -182,36 +180,25 @@ export default class ComparisonTab extends React.Component<
                                     : ''
                             }
                         >
-                            {(this.store.activeGroups.isComplete &&
-                                this.store.activeGroups.result!.length > 1 &&
-                                AppConfig.serverConfig
-                                    .skin_show_settings_menu && (
-                                    <AlterationFilterMenuSection
+                            {this.store.activeGroups.isComplete &&
+                                this.store.activeGroups.result!.length > 1 && (
+                                    <AlterationEnrichmentTypeSelector
                                         store={this.store}
                                         updateSelectedEnrichmentEventTypes={
                                             this.store
                                                 .updateSelectedEnrichmentEventTypes
                                         }
+                                        showMutations={
+                                            this.store.hasMutationEnrichmentData
+                                        }
+                                        showCnas={
+                                            this.store.hasCnaEnrichmentData
+                                        }
+                                        showStructuralVariants={
+                                            this.store.hasStructuralVariantData
+                                        }
                                     />
-                                )) || (
-                                <AlterationEnrichmentTypeSelector
-                                    classNames={
-                                        styles.inlineAlterationTypeSelectorMenu
-                                    }
-                                    store={this.store}
-                                    updateSelectedEnrichmentEventTypes={
-                                        this.store
-                                            .updateSelectedEnrichmentEventTypes
-                                    }
-                                    showMutations={
-                                        this.store.hasMutationEnrichmentData
-                                    }
-                                    showCnas={this.store.hasCnaEnrichmentData}
-                                    showStructuralVariants={
-                                        this.store.hasStructuralVariantData
-                                    }
-                                />
-                            )}
+                                )}
                             <AlterationEnrichments
                                 store={this.store}
                                 resultsViewStore={this.props.store}

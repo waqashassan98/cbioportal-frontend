@@ -19,7 +19,6 @@ const getTextFromElement = require('../../../shared/specUtils')
     .getTextFromElement;
 const waitForStudyViewSelectedInfo = require('../../../shared/specUtils')
     .waitForStudyViewSelectedInfo;
-var waitForStudyView = require('../../../shared/specUtils').waitForStudyView;
 const { setDropdownOpen, jsApiHover } = require('../../../shared/specUtils');
 
 var {
@@ -43,7 +42,7 @@ const ADD_CHART_CUSTOM_GROUPS_TEXTAREA = "[data-test='CustomCaseSetInput']";
 const STUDY_SUMMARY_RAW_DATA_DOWNLOAD =
     "[data-test='studySummaryRawDataDownloadIcon']";
 const CNA_GENES_TABLE = "[data-test='copy number alterations-table']";
-const CANCER_GENE_FILTER_ICON = "[data-test='header-filter-icon']";
+const CANCER_GENE_FILTER_ICON = "[data-test='cancer-gene-filter']";
 
 const WAIT_FOR_VISIBLE_TIMEOUT = 30000;
 
@@ -90,7 +89,7 @@ describe('study laml_tcga tests', () => {
         $("[data-test='add-chart-option-blast-count'] input").click();
 
         // Pause a bit time to let the page render the charts
-        waitForStudyView();
+        browser.pause();
         const res = checkElementWithMouseDisabled('#mainColumn');
         assertScreenShotMatch(res);
     });
@@ -104,12 +103,10 @@ describe('study laml_tcga tests', () => {
         ).waitForDisplayed({ timeout: WAIT_FOR_VISIBLE_TIMEOUT });
 
         // Pause a bit time to let the table render
-        waitForStudyView();
+        browser.pause();
 
         $("[data-test='add-chart-option-other-sample-id'] input").click();
-        $(
-            "[data-test='chart-container-OTHER_SAMPLE_ID'] .ReactVirtualized__Table"
-        ).waitForDisplayed({
+        $("[data-test='chart-container-OTHER_SAMPLE_ID']").waitForDisplayed({
             timeout: WAIT_FOR_VISIBLE_TIMEOUT,
         });
         const res = browser.checkElement(
@@ -199,7 +196,7 @@ describe('study laml_tcga tests', () => {
             it('add chart button should be disabled when content is invalid', () => {
                 $(ADD_CHART_CUSTOM_GROUPS_TEXTAREA).setValue('test');
                 // pause to wait for the content validation
-                $('[data-test=ValidationResultWarning]').waitForDisplayed();
+                browser.pause();
                 assert(
                     !$(ADD_CHART_CUSTOM_GROUPS_ADD_CHART_BUTTON).isEnabled()
                 );
@@ -208,10 +205,8 @@ describe('study laml_tcga tests', () => {
                 $(ADD_CHART_CUSTOM_GROUPS_TEXTAREA).setValue(
                     'laml_tcga:TCGA-AB-2802-03'
                 );
-                // pause to wait for the content validation (remove the error message from the previous test)
-                $('[data-test=ValidationResultWarning]').waitForDisplayed({
-                    reverse: true,
-                });
+                // pause to wait for the content validation
+                browser.pause();
                 assert($(ADD_CHART_CUSTOM_GROUPS_ADD_CHART_BUTTON).isEnabled());
             });
             //Skipping it for now since this feature is dependent on session-service and
@@ -546,7 +541,8 @@ describe('virtual study', () => {
     it('loads a virtual study', () => {
         const url = `${CBIOPORTAL_URL}/study/summary?id=5dd408f0e4b0f7d2de7862a8`;
         goToUrlAndSetLocalStorage(url);
-        waitForStudyView();
+        waitForNetworkQuiet();
+        browser.pause(1000);
         assertScreenShotMatch(checkElementWithMouseDisabled('#mainColumn'));
     });
 });

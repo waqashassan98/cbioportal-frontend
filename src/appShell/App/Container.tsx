@@ -36,7 +36,10 @@ interface IContainerProps {
 
 function isLocalDBServer() {
     try {
-        return AppConfig.serverConfig.app_name === 'localdbe2e';
+        return (
+            (window as any).frontendConfig.serverConfig.app_name ===
+            'localdbe2e'
+        );
     } catch (ex) {
         return false;
     }

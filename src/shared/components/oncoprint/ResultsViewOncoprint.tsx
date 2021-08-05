@@ -467,10 +467,10 @@ export default class ResultsViewOncoprint extends React.Component<
                 return self.props.store.driverAnnotationSettings.cosmicCount;
             },
             get hidePutativePassengers() {
-                return !self.props.store.driverAnnotationSettings.includeVUS;
+                return self.props.store.driverAnnotationSettings.excludeVUS;
             },
             get hideGermlineMutations() {
-                return !self.props.store.includeGermlineMutations;
+                return self.props.store.excludeGermlineMutations;
             },
             get annotateCBioPortalInputValue() {
                 return (
@@ -649,7 +649,7 @@ export default class ResultsViewOncoprint extends React.Component<
                             );
                         }
                     );
-                    this.props.store.driverAnnotationSettings.includeVUS = true;
+                    this.props.store.driverAnnotationSettings.excludeVUS = false;
                 } else {
                     if (
                         !this.controlsState.annotateDriversOncoKbDisabled &&
@@ -718,8 +718,8 @@ export default class ResultsViewOncoprint extends React.Component<
                     );
                 }
             ),
-            onSelectHideVUS: (s: boolean) => {
-                this.props.store.driverAnnotationSettings.includeVUS = !s;
+            onSelectHidePutativePassengers: (s: boolean) => {
+                this.props.store.driverAnnotationSettings.excludeVUS = s;
             },
             onSelectHideGermlineMutations: (s: boolean) => {
                 this.props.store.setExcludeGermlineMutations(s);
