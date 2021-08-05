@@ -702,7 +702,6 @@ export default class MutationOncoprint extends React.Component<
                             highlightedIds={this.highlightedIds}
                             highlightedTracks={this.highlightedTracks}
                             initParams={INIT_PARAMS}
-                            keepSorted={true}
                             showTrackLabels={
                                 !(
                                     this.mode ===

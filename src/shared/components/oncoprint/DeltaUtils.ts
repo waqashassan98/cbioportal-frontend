@@ -88,9 +88,8 @@ export function transition(
         getTrackSpecKeyToTrackId
     );
     tryReleaseRendering(nextProps, prevProps, oncoprint);
-    tryKeepSorted(nextProps, prevProps, oncoprint);
     if (notKeepingSorted) {
-        oncoprint.keepSorted(!!nextProps.keepSorted);
+        oncoprint.keepSorted(true);
     }
     if (suppressingRendering) {
         doReleaseRendering(nextProps, oncoprint);
@@ -228,18 +227,6 @@ function doReleaseRendering(
     oncoprint: OncoprintJS
 ) {
     oncoprint.releaseRendering(nextProps.onReleaseRendering);
-}
-
-function tryKeepSorted(
-    nextProps: IOncoprintProps,
-    prevProps: Partial<IOncoprintProps>,
-    oncoprint: OncoprintJS
-) {
-    if (nextProps.keepSorted && !prevProps.keepSorted) {
-        oncoprint.keepSorted(true);
-    } else if (!nextProps.keepSorted && prevProps.keepSorted) {
-        oncoprint.keepSorted(false);
-    }
 }
 
 function trySuppressRendering(

@@ -76,7 +76,6 @@ export default class PatientViewPathwayMapper extends React.Component<
                     ),
                 };
                 if (mutationType) {
-                    //@ts-ignore
                     alterationFrequencyData.push(mutationType);
                 }
             }
@@ -97,7 +96,6 @@ export default class PatientViewPathwayMapper extends React.Component<
                     ),
                 };
                 if (cna) {
-                    //@ts-ignore
                     alterationFrequencyData.push(cna);
                 }
             }
