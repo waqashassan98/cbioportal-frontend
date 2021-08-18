@@ -4120,7 +4120,14 @@ export class StudyViewPageStore
             return _.reduce(
                 this.studyIds,
                 (acc: CancerStudy[], next) => {
-                    if (everyStudyIdToStudy[next]) {
+                    if (
+                        everyStudyIdToStudy[next] &&
+                        (!AppConfig.serverConfig
+                            .skin_show_unauthorized_studies ||
+                            (AppConfig.serverConfig
+                                .skin_show_unauthorized_studies &&
+                                everyStudyIdToStudy[next].authorized == true))
+                    ) {
                         acc.push(everyStudyIdToStudy[next]);
                     }
                     return acc;

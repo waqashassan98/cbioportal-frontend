@@ -98,6 +98,8 @@ export type CancerStudy = {
 
         'studyId': string
 
+        'authorized': boolean
+
 };
 export type CancerStudyTags = {
     'cancerStudyId': number
