@@ -207,13 +207,14 @@ function setServerConfiguration(props) {
 
 function sessionServiceIsEnabled() {
     return browser.execute(function() {
-        return window.frontendConfig.serverConfig.sessionServiceEnabled;
+        return window.getServerConfig().sessionServiceEnabled;
     }).value;
 }
 
 function showGsva() {
     browser.execute(function() {
-        window.frontendConfig.serverConfig.skin_show_gsva = true;
+        window.setServerConfig({ skin_show_gsva: true });
+        //window.frontendConfig.serverConfig.skin_show_gsva = true;
     });
 }
 

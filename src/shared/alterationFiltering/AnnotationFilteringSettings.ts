@@ -1,5 +1,5 @@
 import { action, observable, ObservableMap } from 'mobx';
-import AppConfig from 'appConfig';
+import { getServerConfig } from 'config/config';
 import { MobxPromiseUnionType } from 'mobxpromise';
 import _ from 'lodash';
 
@@ -81,7 +81,7 @@ export interface IDriverAnnotationReport {
 
 export function buildDriverAnnotationSettings(
     didOncoKbFailInOncoprint: () => boolean,
-    config = AppConfig.serverConfig
+    config = getServerConfig()
 ): DriverAnnotationSettings {
     return observable({
         cbioportalCount: false,
@@ -257,7 +257,7 @@ export function buildDriverAnnotationControlsState(
     customDriverAnnotationReport: IDriverAnnotationReport | undefined,
     didOncoKbFailInOncoprint?: boolean,
     didHotspotFailInOncoprint?: boolean,
-    config = AppConfig.serverConfig
+    config = getServerConfig()
 ): IDriverAnnotationControlsState {
     return observable({
         get distinguishDrivers() {
