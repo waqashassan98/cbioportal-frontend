@@ -347,15 +347,15 @@ export class PatientViewPageStore {
 
     @observable
     public mutationTableGeneFilterOption: GeneFilterOption = getGeneFilterDefault(
-        getBrowserWindow().frontendConfig
+        { serverConfig: getServerConfig() }
     );
     @observable
     public copyNumberTableGeneFilterOption: GeneFilterOption = getGeneFilterDefault(
-        getBrowserWindow().frontendConfig
+        { serverConfig: getServerConfig() }
     );
     @observable
     public structuralVariantTableGeneFilterOption: GeneFilterOption = getGeneFilterDefault(
-        getBrowserWindow().frontendConfig
+        { serverConfig: getServerConfig() }
     );
 
     @computed get sampleId() {

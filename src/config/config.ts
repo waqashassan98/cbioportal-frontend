@@ -238,6 +238,7 @@ function compressRequestBodies(
 
 export function initializeLoadConfiguration() {
     // @ts-ignore: ENV_* are defined in webpack.config.js
+    const BASEURL = getBrowserWindow().frontendConfig.baseUrl;
 
     // @ts-ignore: ENV_* are defined in webpack.config.js
     const APIROOT =
@@ -260,6 +261,7 @@ export function initializeLoadConfiguration() {
         configurationServiceUrl: configServiceUrl,
         apiRoot: APIROOT,
         frontendUrl: frontendUrl,
+        baseUrl: BASEURL,
     };
 
     setLoadConfig(loadConfig);

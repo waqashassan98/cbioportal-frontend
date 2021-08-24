@@ -304,8 +304,8 @@ export function buildDriverAnnotationControlsState(
         },
         get customDriverAnnotationBinaryMenuLabel() {
             if (customDriverAnnotationReport) {
-                const label =
-                    config.oncoprint_custom_driver_annotation_binary_menu_label;
+                const label = getServerConfig()
+                    .oncoprint_custom_driver_annotation_binary_menu_label;
                 if (
                     label &&
                     customDriverAnnotationReport &&
@@ -317,8 +317,8 @@ export function buildDriverAnnotationControlsState(
         },
         get customDriverAnnotationTiersMenuLabel() {
             if (customDriverAnnotationReport) {
-                const label =
-                    config.oncoprint_custom_driver_annotation_tiers_menu_label;
+                const label = getServerConfig()
+                    .oncoprint_custom_driver_annotation_tiers_menu_label;
                 if (
                     label &&
                     customDriverAnnotationReport &&

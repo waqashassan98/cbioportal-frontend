@@ -796,10 +796,8 @@ export default class StudyViewPage extends React.Component<
                                                             />
                                                         }
                                                         customDriverSourceName={
-                                                            getBrowserWindow()
-                                                                .frontendConfig
-                                                                .serverConfig
-                                                                .oncoprint_custom_driver_annotation_binary_menu_label
+                                                            getServerConfig()
+                                                                .oncoprint_custom_driver_annotation_binary_menu_label!
                                                         }
                                                         showDriverAnnotationSection={
                                                             this.store
