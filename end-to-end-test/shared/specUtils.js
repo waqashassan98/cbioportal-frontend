@@ -212,10 +212,7 @@ function sessionServiceIsEnabled() {
 }
 
 function showGsva() {
-    browser.execute(function() {
-        window.setServerConfig({ skin_show_gsva: true });
-        //window.frontendConfig.serverConfig.skin_show_gsva = true;
-    });
+    setServerConfiguration({ skin_show_gsva: true });
 }
 
 function waitForNumberOfStudyCheckboxes(expectedNumber, text) {
