@@ -181,6 +181,8 @@ export function getComparisonParamsForTable(
     selectedRowsKeys: string[],
     chartType: ChartType
 ) {
+    console.log('ey');
+
     switch (chartType) {
         case ChartTypeEnum.MUTATED_GENES_TABLE:
         case ChartTypeEnum.CNA_GENES_TABLE:
@@ -192,6 +194,8 @@ export function getComparisonParamsForTable(
             return {
                 hugoGeneSymbols,
             };
+        case ChartTypeEnum.SAMPLE_TREATMENT_GROUPS_TABLE:
+        case ChartTypeEnum.PATIENT_TREATMENT_GROUPS_TABLE:
         case ChartTypeEnum.SAMPLE_TREATMENTS_TABLE:
         case ChartTypeEnum.PATIENT_TREATMENTS_TABLE:
             return {

@@ -827,9 +827,13 @@ export type StudyViewFilter = {
 
         'patientTreatmentFilters': AndedPatientTreatmentFilters
 
+        'patientTreatmentGroupFilters': AndedPatientTreatmentFilters
+
         'sampleIdentifiers': Array < SampleIdentifier >
 
         'sampleTreatmentFilters': AndedSampleTreatmentFilters
+
+        'sampleTreatmentGroupFilters': AndedSampleTreatmentFilters
 
         'studyIds': Array < string >
 
