@@ -8556,6 +8556,9 @@ export class StudyViewPageStore
     public readonly displayPatientTreatmentGroups = remoteData({
         await: () => [this.queriedPhysicalStudyIds],
         invoke: () => {
+            if (!getServerConfig().enable_treatment_groups) {
+                return Promise.resolve(false);
+            }
             return defaultClient.getContainsTreatmentDataUsingPOST({
                 studyIds: toJS(this.queriedPhysicalStudyIds.result),
                 tier: 'AgentClass',
@@ -8566,6 +8569,9 @@ export class StudyViewPageStore
     public readonly displaySampleTreatmentGroups = remoteData({
         await: () => [this.queriedPhysicalStudyIds],
         invoke: () => {
+            if (!getServerConfig().enable_treatment_groups) {
+                return Promise.resolve(false);
+            }
             return defaultClient.getContainsSampleTreatmentDataUsingPOST({
                 studyIds: toJS(this.queriedPhysicalStudyIds.result),
                 tier: 'AgentClass',
