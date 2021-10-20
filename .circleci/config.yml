@@ -17,9 +17,6 @@ run_e2e_and_save_artifacts: &run_e2e_and_save_artifacts
     - attach_workspace:
         at: /tmp/
     - run:
-        name: "Wait for netlify deploy preview to be ready"
-        command: yarn run waitForNetlifyPreview ${CIRCLE_SHA1}
-    - run:
         name: "Set netlify deploy preview"
         command: echo 'export NETLIFY_DEPLOY_PREVIEW="deploy-preview-${CIRCLE_PR_NUMBER}--cbioportalfrontend"' >> $BASH_ENV
     - run:
@@ -114,6 +111,15 @@ jobs:
           root: /tmp
           paths:
             - repo
+
+  netlify:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: /tmp/
+      - run:
+          name: "Wait for netlify deploy preview to be ready"
+          command: yarn run waitForNetlifyPreview ${CIRCLE_SHA1}
 
   api_sync:
     <<: *defaults
@@ -349,12 +355,17 @@ workflows:
       - unit_tests:
           requires:
             - install
+      - netlify:
+          requires:
+            - install
       - end_to_end_tests:
           requires:
             - install
+            - netlify
       - end_to_end_tests_localdb:
           requires:
             - install
+            - netlify
       - api_sync:
           requires:
             - install
