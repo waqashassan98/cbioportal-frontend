@@ -581,6 +581,7 @@ export default class PatientViewPage extends React.Component<
                     ':' +
                     this.patientViewPageStore.patientId
             );
+            const moo = 'hello';
             cohortNav = (
                 <PaginationControls
                     currentPage={indexInCohort + 1}
