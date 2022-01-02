@@ -9,9 +9,6 @@
     ]
   },
   "description": "",
-  "pre-commit": [
-    "prettierFixCurrentChanges"
-  ],
   "scripts": {
     "start": "lerna run watch --parallel",
     "startSSL": "lerna run watchSSL --parallel",
@@ -67,7 +64,7 @@
   },
   "engines": {
     "node": "15.2.1",
-    "yarn": "1.22.5"
+    "yarn": "1.22.15"
   },
   "resolutions": {
     "mobx": "^6.0.0",
