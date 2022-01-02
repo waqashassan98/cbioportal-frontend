@@ -599,6 +599,9 @@ export default class UserSelections extends React.Component<
                 case ChartTypeEnum.MUTATED_GENES_TABLE:
                     color = MUT_COLOR_MISSENSE;
                     break;
+                case ChartTypeEnum.MUTATED_GENES_TABLE_2:
+                    color = MUT_COLOR_MISSENSE;
+                    break;
                 case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE:
                     color = STRUCTURAL_VARIANT_COLOR;
                     break;

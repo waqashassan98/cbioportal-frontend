@@ -17,6 +17,26 @@ export type AlterationCountByGene = {
         'totalCount': number
 
 };
+export type AlterationCountByProtein = {
+    'entrezGeneId': number
+
+        'hugoGeneSymbol': string
+
+        'matchingGenePanelIds': Array < string >
+
+        'proteinChange': string
+
+        'numberOfAlteredCases': number
+
+        'numberOfProfiledCases': number
+
+        //'qValue': number
+
+        //'totalCount': number
+
+        'mutationFrequency': number
+
+};
 export type AlterationEnrichment = {
     'counts': Array < CountSummary >
 
@@ -4648,6 +4668,52 @@ export default class CBioPortalAPIInternal {
         });
     };
 
+
+    /**
+     * Fetch mutated genes by study view filter
+     * @method
+     * @name CBioPortalAPIInternal#fetchMutatedGenesUsingPOST
+     * @param {} studyViewFilter - Study view filter
+     */
+     fetchMutatedGenes2UsingPOSTWithHttpInfo(parameters: {
+        'studyViewFilter': StudyViewFilter,
+        $queryParameters ? : any,
+        $domain ? : string
+    }): Promise < request.Response > {
+        const domain = parameters.$domain ? parameters.$domain : this.domain;
+        const errorHandlers = this.errorHandlers;
+        const request = this.request;
+        let path = '/mutated-protein/fetch';
+        let body: any;
+        let queryParameters: any = {};
+        let headers: any = {};
+        let form: any = {};
+        return new Promise(function(resolve, reject) {
+            headers['Accept'] = 'application/json';
+            headers['Content-Type'] = 'application/json';
+
+            if (parameters['studyViewFilter'] !== undefined) {
+                body = parameters['studyViewFilter'];
+            }
+
+            if (parameters['studyViewFilter'] === undefined) {
+                reject(new Error('Missing required  parameter: studyViewFilter'));
+                return;
+            }
+
+            if (parameters.$queryParameters) {
+                Object.keys(parameters.$queryParameters).forEach(function(parameterName) {
+                    var parameter = parameters.$queryParameters[parameterName];
+                    queryParameters[parameterName] = parameter;
+                });
+            }
+
+            request('POST', domain + path, body, headers, queryParameters, form, reject, resolve, errorHandlers);
+
+        });
+    };
+
+
     /**
      * Fetch mutated genes by study view filter
      * @method
@@ -4679,6 +4745,24 @@ export default class CBioPortalAPIInternal {
         }
         let keys = Object.keys(queryParameters);
         return this.domain + path + (keys.length > 0 ? '?' + (keys.map(key => key + '=' + encodeURIComponent(queryParameters[key])).join('&')) : '');
+    };
+
+
+    /**
+     * Fetch mutated genes 2 by study view filter
+     * @method
+     * @name CBioPortalAPIInternal#fetchMutatedGenesUsingPOST
+     * @param {} studyViewFilter - Study view filter
+     */
+     fetchMutatedGenes2UsingPOST(parameters: {
+        'studyViewFilter': StudyViewFilter,
+        $queryParameters ? : any,
+        $domain ? : string
+    }): Promise < Array < AlterationCountByProtein >
+    > {
+        return this.fetchMutatedGenes2UsingPOSTWithHttpInfo(parameters).then(function(response: request.Response) {
+            return response.body;
+        });
     };
 
     /**

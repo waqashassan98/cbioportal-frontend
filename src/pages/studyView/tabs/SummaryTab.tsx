@@ -326,6 +326,29 @@ export class StudySummaryTab extends React.Component<
                 props.filterAlterations = this.store.isGlobalMutationFilterActive;
                 break;
             }
+            case ChartTypeEnum.MUTATED_GENES_TABLE_2: {
+                props.filters = this.store.getGeneFiltersByUniqueKey(
+                    chartMeta.uniqueKey
+                );
+                props.promise = this.store.mutatedGeneTable2RowData;
+                props.onValueSelection = this.store.addGeneFilters;
+                props.onResetSelection = () =>
+                    this.store.resetGeneFilter(chartMeta.uniqueKey);
+                props.selectedGenes = this.store.selectedGenes;
+                props.onGeneSelect = this.store.onCheckGene;
+                props.title = this.store.getChartTitle(
+                    ChartTypeEnum.MUTATED_GENES_TABLE_2,
+                    props.title+" New "
+                );
+                props.getData = () => this.store.getMutatedGenes2DownloadData();
+                props.genePanelCache = this.store.genePanelCache;
+                props.downloadTypes = ['Data'];
+                props.filterByCancerGenes = this.store.filterMutatedGenesTableByCancerGenes;
+                props.onChangeCancerGeneFilter = this.store.updateMutatedGenesTableByCancerGenesFilter;
+                props.alterationFilterEnabled = getServerConfig().skin_show_settings_menu;
+                props.filterAlterations = this.store.isGlobalMutationFilterActive;
+                break;
+            }
             case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE: {
                 props.filters = this.store.getGeneFiltersByUniqueKey(
                     chartMeta.uniqueKey

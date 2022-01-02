@@ -69,6 +69,7 @@ export type MultiSelectionTableColumn = {
     columnTooltip?: JSX.Element;
 };
 
+
 export type MultiSelectionTableProps = {
     tableType: FreqColumnTypeEnum;
     promise: MobxPromise<MultiSelectionTableRow[]>;

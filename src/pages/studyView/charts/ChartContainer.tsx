@@ -49,7 +49,7 @@ import { ISurvivalDescription } from 'pages/resultsView/survival/SurvivalDescrip
 import {
     MultiSelectionTable,
     MultiSelectionTableColumn,
-    MultiSelectionTableColumnKey,
+    MultiSelectionTableColumnKey
 } from 'pages/studyView/table/MultiSelectionTable';
 import { FreqColumnTypeEnum } from '../TableUtils';
 import {
@@ -86,6 +86,7 @@ const COMPARISON_CHART_TYPES: ChartType[] = [
     ChartTypeEnum.TABLE,
     ChartTypeEnum.BAR_CHART,
     ChartTypeEnum.MUTATED_GENES_TABLE,
+    ChartTypeEnum.MUTATED_GENES_TABLE_2,
     ChartTypeEnum.CNA_GENES_TABLE,
     ChartTypeEnum.SAMPLE_TREATMENTS_TABLE,
     ChartTypeEnum.SAMPLE_TREATMENT_GROUPS_TABLE,
@@ -493,6 +494,80 @@ export class ChartContainer extends React.Component<IChartContainerProps, {}> {
                 );
             }
             case ChartTypeEnum.MUTATED_GENES_TABLE: {
+                return () => {
+                    const numColumn: MultiSelectionTableColumn = {
+                        columnKey: MultiSelectionTableColumnKey.NUMBER,
+                    };
+                    if (this.props.store.isGlobalMutationFilterActive) {
+                        numColumn.columnTooltip = (
+                            <span data-test="hidden-mutation-alterations">
+                                Total number of mutations
+                                <br />
+                                This table is filtered based on selections in
+                                the <i>Alteration Filter</i> menu.
+                            </span>
+                        );
+                    }
+                    return (
+                        <MultiSelectionTable
+                            tableType={FreqColumnTypeEnum.MUTATION}
+                            promise={this.props.promise}
+                            width={getWidthByDimension(
+                                this.props.dimension,
+                                this.borderWidth
+                            )}
+                            height={getTableHeightByDimension(
+                                this.props.dimension,
+                                this.chartHeaderHeight
+                            )}
+                            filters={this.props.filters}
+                            onSubmitSelection={this.handlers.onValueSelection}
+                            onChangeSelectedRows={
+                                this.handlers.onChangeSelectedRows
+                            }
+                            extraButtons={
+                                this.comparisonButtonForTables && [
+                                    this.comparisonButtonForTables,
+                                ]
+                            }
+                            selectedRowsKeys={this.selectedRowsKeys}
+                            onGeneSelect={this.props.onGeneSelect}
+                            selectedGenes={this.props.selectedGenes}
+                            genePanelCache={this.props.genePanelCache}
+                            cancerGeneFilterEnabled={
+                                this.props.cancerGeneFilterEnabled
+                            }
+                            filterByCancerGenes={
+                                this.props.filterByCancerGenes!
+                            }
+                            onChangeCancerGeneFilter={
+                                this.props.onChangeCancerGeneFilter!
+                            }
+                            alterationFilterEnabled={
+                                this.props.alterationFilterEnabled
+                            }
+                            filterAlterations={this.props.filterAlterations}
+                            columns={[
+                                {
+                                    columnKey:
+                                        MultiSelectionTableColumnKey.GENE,
+                                },
+                                {
+                                    columnKey:
+                                        MultiSelectionTableColumnKey.NUMBER_MUTATIONS,
+                                },
+                                numColumn,
+                                {
+                                    columnKey:
+                                        MultiSelectionTableColumnKey.FREQ,
+                                },
+                            ]}
+                            defaultSortBy={MultiSelectionTableColumnKey.FREQ}
+                        />
+                    );
+                };
+            }
+            case ChartTypeEnum.MUTATED_GENES_TABLE_2: {
                 return () => {
                     const numColumn: MultiSelectionTableColumn = {
                         columnKey: MultiSelectionTableColumnKey.NUMBER,

@@ -2516,6 +2516,19 @@ export class ResultsViewPageStore
         default: [],
     });
 
+    readonly mutationProfiles_2 = remoteData({
+        await: () => [this.selectedMolecularProfiles],
+        invoke: async () => {
+            return this.selectedMolecularProfiles.result!.filter(
+                profile =>
+                    profile.molecularAlterationType ===
+                    AlterationTypeConstants.MUTATION_EXTENDED
+            );
+        },
+        onError: error => {},
+        default: [],
+    });
+
     readonly cnaProfiles = remoteData({
         await: () => [this.selectedMolecularProfiles],
         invoke: async () => {
@@ -2601,6 +2614,25 @@ export class ResultsViewPageStore
             },
             _chartMetaSet
         );
+
+        if (!_.isEmpty(this.mutationProfiles_2.result!)) {
+            const uniqueKey = getUniqueKeyFromMolecularProfileIds(
+                this.mutationProfiles.result.map(
+                    profile => profile.molecularProfileId
+                )
+            );
+            _chartMetaSet[uniqueKey] = {
+                uniqueKey: uniqueKey,
+                dataType: ChartMetaDataTypeEnum.GENOMIC,
+                patientAttribute: false,
+                displayName: 'Amino Acid Changes',
+                priority: getDefaultPriorityByUniqueKey(
+                    ChartTypeEnum.MUTATED_GENES_TABLE_2
+                ),
+                renderWhenDataChange: false,
+                description: '',
+            };
+        }
 
         if (!_.isEmpty(this.mutationProfiles.result!)) {
             const uniqueKey = getUniqueKeyFromMolecularProfileIds(

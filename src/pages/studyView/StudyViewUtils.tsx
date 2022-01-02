@@ -2457,6 +2457,9 @@ export function getChartSettingsMap(
             case ChartTypeEnum.MUTATED_GENES_TABLE:
                 chartSetting.filterByCancerGenes = filterMutatedGenesTableByCancerGenes;
                 break;
+            case ChartTypeEnum.MUTATED_GENES_TABLE_2:
+                chartSetting.filterByCancerGenes = filterMutatedGenesTableByCancerGenes;
+                break;
             case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE:
                 chartSetting.filterByCancerGenes = filterSVGenesTableByCancerGenes;
                 break;

@@ -1437,6 +1437,47 @@ export class StudyViewPageStore
         });
     }
 
+    private createMutatedGene2ComparisonSession(
+        chartMeta: ChartMeta,
+        hugoGeneSymbols: string[],
+        statusCallback: (phase: LoadingPhase) => void
+    ): Promise<string> {
+        statusCallback(LoadingPhase.DOWNLOADING_GROUPS);
+
+        // Get mutations among currently selected samples
+        const promises: any[] = [this.selectedSamples, this.mutationProfiles];
+
+        return new Promise<string>(resolve => {
+            onMobxPromise<any>(
+                promises,
+                async (
+                    selectedSamples: Sample[],
+                    mutationProfiles: MolecularProfile[]
+                ) => {
+                    const mutationData = await getMutationData(
+                        selectedSamples,
+                        mutationProfiles,
+                        hugoGeneSymbols
+                    );
+
+                    const mutationsByGene = _.groupBy(
+                        mutationData,
+                        m => m.gene.hugoGeneSymbol
+                    );
+
+                    return resolve(
+                        await createAlteredGeneComparisonSession(
+                            chartMeta,
+                            this.studyIds,
+                            mutationsByGene,
+                            statusCallback
+                        )
+                    );
+                }
+            );
+        });
+    }
+
     private createCategoricalAttributeComparisonSession(
         chartMeta: ChartMeta,
         clinicalAttributeValues: ClinicalDataCountSummary[],
@@ -1730,6 +1771,13 @@ export class StudyViewPageStore
                 break;
             case ChartTypeEnum.MUTATED_GENES_TABLE:
                 comparisonId = await this.createMutatedGeneComparisonSession(
+                    chartMeta,
+                    params.hugoGeneSymbols!,
+                    statusCallback
+                );
+                break;
+            case ChartTypeEnum.MUTATED_GENES_TABLE_2:
+                comparisonId = await this.createMutatedGene2ComparisonSession(
                     chartMeta,
                     params.hugoGeneSymbols!,
                     statusCallback
@@ -3065,6 +3113,7 @@ export class StudyViewPageStore
                     this.updateScatterPlotFilterByValues(chartUniqueKey);
                     break;
                 case ChartTypeEnum.MUTATED_GENES_TABLE:
+                    case ChartTypeEnum.MUTATED_GENES_TABLE_2:
                 case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE:
                 case ChartTypeEnum.CNA_GENES_TABLE:
                     this.resetGeneFilter(chartUniqueKey);
@@ -3134,6 +3183,7 @@ export class StudyViewPageStore
                     )
                 );
             case ChartTypeEnum.MUTATED_GENES_TABLE:
+            case ChartTypeEnum.MUTATED_GENES_TABLE_2:
             case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE:
             case ChartTypeEnum.CNA_GENES_TABLE:
                 return this._geneFilterSet.has(chartUniqueKey);
@@ -4650,6 +4700,20 @@ export class StudyViewPageStore
         default: [],
     });
 
+    readonly mutationProfiles_2 = remoteData({
+        await: () => [this.studyIdToMolecularProfiles],
+        invoke: () => {
+            return Promise.resolve(
+                getFilteredMolecularProfilesByAlterationType(
+                    this.studyIdToMolecularProfiles.result,
+                    AlterationTypeConstants.MUTATION_EXTENDED
+                )
+            );
+        },
+        onError: () => {},
+        default: [],
+    });
+
     readonly structuralVariantProfiles = remoteData({
         await: () => [this.studyIdToMolecularProfiles],
         invoke: () => {
@@ -5545,6 +5609,25 @@ export class StudyViewPageStore
             };
         }
 
+        if (!_.isEmpty(this.mutationProfiles_2.result)) {
+            const uniqueKey = getUniqueKeyFromMolecularProfileIds(
+                this.mutationProfiles_2.result.map(
+                    mutationProfile => mutationProfile.molecularProfileId
+                )
+            )+"2";
+            _chartMetaSet[uniqueKey] = {
+                uniqueKey: uniqueKey,
+                dataType: ChartMetaDataTypeEnum.GENOMIC,
+                patientAttribute: false,
+                displayName: 'Amino Acid Changes',
+                priority: getDefaultPriorityByUniqueKey(
+                    ChartTypeEnum.MUTATED_GENES_TABLE_2
+                ),
+                renderWhenDataChange: false,
+                description: '',
+            };
+        }
+
         if (!_.isEmpty(this.structuralVariantProfiles.result)) {
             const uniqueKey = getUniqueKeyFromMolecularProfileIds(
                 this.structuralVariantProfiles.result.map(
@@ -5672,6 +5755,7 @@ export class StudyViewPageStore
             this.chartClinicalAttributes.isPending ||
             this.clinicalAttributes.isPending ||
             this.mutationProfiles.isPending ||
+            this.mutationProfiles_2.isPending ||
             this.cnaProfiles.isPending ||
             this.structuralVariantProfiles.isPending ||
             this.survivalPlots.isPending ||
@@ -6065,6 +6149,12 @@ export class StudyViewPageStore
                             ? true
                             : chartUserSettings.filterByCancerGenes;
                     break;
+                case ChartTypeEnum.MUTATED_GENES_TABLE_2:
+                    this._filterMutatedGenesTableByCancerGenes =
+                        chartUserSettings.filterByCancerGenes === undefined
+                            ? true
+                            : chartUserSettings.filterByCancerGenes;
+                    break;
                 case ChartTypeEnum.STRUCTURAL_VARIANT_GENES_TABLE:
                     this._filterSVGenesTableByCancerGenes =
                         chartUserSettings.filterByCancerGenes === undefined
@@ -6194,6 +6284,27 @@ export class StudyViewPageStore
                 uniqueKey,
                 STUDY_VIEW_CONFIG.layout.dimensions[
                     ChartTypeEnum.MUTATED_GENES_TABLE
+                ]
+            );
+            if (mutatedGeneMeta && mutatedGeneMeta.priority !== 0) {
+                this.changeChartVisibility(mutatedGeneMeta.uniqueKey, true);
+            }
+        }
+        if (!_.isEmpty(this.mutationProfiles_2.result)) {
+            const uniqueKey = getUniqueKeyFromMolecularProfileIds(
+                this.mutationProfiles_2.result.map(
+                    mutationProfile => mutationProfile.molecularProfileId
+                )
+            )+"2";
+            const mutatedGeneMeta = _.find(
+                this.chartMetaSet,
+                chartMeta => chartMeta.uniqueKey === uniqueKey
+            );
+            this.chartsType.set(uniqueKey, ChartTypeEnum.MUTATED_GENES_TABLE_2);
+            this.chartsDimension.set(
+                uniqueKey,
+                STUDY_VIEW_CONFIG.layout.dimensions[
+                    ChartTypeEnum.MUTATED_GENES_TABLE_2
                 ]
             );
             if (mutatedGeneMeta && mutatedGeneMeta.priority !== 0) {
@@ -7080,6 +7191,69 @@ export class StudyViewPageStore
         default: [],
     });
 
+    readonly mutatedGeneTable2RowData = remoteData<MultiSelectionTableRow[]>({
+        await: () =>
+            this.oncokbCancerGeneFilterEnabled
+                ? [
+                      this.mutationProfiles_2,
+                      this.oncokbAnnotatedGeneEntrezGeneIds,
+                      this.oncokbOncogeneEntrezGeneIds,
+                      this.oncokbTumorSuppressorGeneEntrezGeneIds,
+                      this.oncokbCancerGeneEntrezGeneIds,
+                      this.selectedSamples,
+                  ]
+                : [this.mutationProfiles_2, this.selectedSamples],
+        invoke: async () => {
+            if (
+                !_.isEmpty(this.mutationProfiles_2.result) &&
+                this.selectedSamples.result.length > 0
+            ) {
+                let mutatedGenes = await internalClient.fetchMutatedGenes2UsingPOST(
+                    {
+                        studyViewFilter: this.filters,
+                    }
+                );
+                return mutatedGenes.map(item => {
+                    return {
+                        // ...item,
+                        matchingGenePanelIds: [],                    
+                        numberOfAlteredCases: item.numberOfAlteredCases,
+                        numberOfProfiledCases: item.numberOfProfiledCases,
+                        qValue: 0,
+                        totalCount: item.numberOfProfiledCases,
+                        label: item.proteinChange,
+                        uniqueKey: item.proteinChange,
+                        oncokbAnnotated: this.oncokbCancerGeneFilterEnabled
+                            ? this.oncokbAnnotatedGeneEntrezGeneIds.result.includes(
+                                  item.entrezGeneId
+                              )
+                            : false,
+                        isOncokbOncogene: this.oncokbCancerGeneFilterEnabled
+                            ? this.oncokbOncogeneEntrezGeneIds.result.includes(
+                                  item.entrezGeneId
+                              )
+                            : false,
+                        isOncokbTumorSuppressorGene: this
+                            .oncokbCancerGeneFilterEnabled
+                            ? this.oncokbTumorSuppressorGeneEntrezGeneIds.result.includes(
+                                  item.entrezGeneId
+                              )
+                            : false,
+                        isCancerGene: this.oncokbCancerGeneFilterEnabled
+                            ? this.oncokbCancerGeneEntrezGeneIds.result.includes(
+                                  item.entrezGeneId
+                              )
+                            : false,
+                    };
+                });
+            } else {
+                return [];
+            }
+        },
+        onError: () => {},
+        default: [],
+    });
+
     readonly structuralVariantGeneTableRowData = remoteData<
         MultiSelectionTableRow[]
     >({
@@ -7656,6 +7830,54 @@ export class StudyViewPageStore
                         record.totalCount,
                         record.numberOfAlteredCases,
                         record.numberOfProfiledCases,
+                        getFrequencyStr(
+                            (record.numberOfAlteredCases /
+                                record.numberOfProfiledCases) *
+                                100
+                        ),
+                    ];
+                    if (this.oncokbCancerGeneFilterEnabled) {
+                        rowData.push(
+                            this.oncokbCancerGeneFilterEnabled
+                                ? record.isCancerGene
+                                    ? 'Yes'
+                                    : 'No'
+                                : 'NA'
+                        );
+                    }
+                    data.push(rowData.join('\t'));
+                }
+            );
+            return data.join('\n');
+        } else return '';
+    }
+
+    public async getMutatedGenes2DownloadData(): Promise<string> {
+        if (this.mutatedGeneTable2RowData.result) {
+            let header = [
+                'Protein',
+                'MutSig(Q-value)',
+                '# Mut',
+                // '#',
+                'Profiled Samples',
+                'Freq',
+            ];
+            if (this.oncokbCancerGeneFilterEnabled) {
+                header.push('Is Cancer Gene (source: OncoKB)');
+            }
+            let data = [header.join('\t')];
+            _.each(
+                this.mutatedGeneTable2RowData.result,
+                (record: MultiSelectionTableRow) => {
+                    let rowData = [
+                        record.label,
+                        record.qValue === undefined
+                            ? ''
+                            : getQValue(record.qValue),
+                        // record.totalCount,
+                        record.numberOfAlteredCases,
+                        record.numberOfProfiledCases,
+                        // record.mutationFrequency,
                         getFrequencyStr(
                             (record.numberOfAlteredCases /
                                 record.numberOfProfiledCases) *
@@ -8707,6 +8929,16 @@ export class StudyViewPageStore
                         ? this.molecularProfileSampleCountSet.result[
                               MolecularAlterationType_filenameSuffix.MUTATION_EXTENDED!
                           ]
+                        : 0;
+                    break;
+                }
+                case ChartTypeEnum.MUTATED_GENES_TABLE_2: {
+                    count = this.molecularProfileSampleCountSet.result[
+                        MolecularAlterationType_filenameSuffix.MUTATION_EXTENDED!
+                    ]
+                        ? this.molecularProfileSampleCountSet.result[
+                              MolecularAlterationType_filenameSuffix.MUTATION_EXTENDED!
+                          ] 
                         : 0;
                     break;
                 }
