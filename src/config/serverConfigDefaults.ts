@@ -126,30 +126,36 @@ const ServerConfigDefaults: Partial<IServerConfig> = {
         tableAttrs: ['CANCER_TYPE', 'CANCER_TYPE_DETAILED'],
         priority: {
             CANCER_TYPE: 3000,
-            CANCER_TYPE_DETAILED: 2000,
+            MUTATED_GENES_TABLE: 2000,
+            CANCER_TYPE_DETAILED: 1500,
+            SAMPLE_TREATMENTS_TABLE: 1400,
             // TODO should have a more generic way to define survival plots priority
             GENOMIC_PROFILES_SAMPLE_COUNT: 1000,
-            OS_SURVIVAL: 400,
+            SAMPLE_COUNT: 400,
+     
             DFS_SURVIVAL: 300,
             DSS_SURVIVAL: 250,
             PFS_SURVIVAL: 250,
             MUTATION_COUNT_CNA_FRACTION: 200,
-            MUTATED_GENES_TABLE: 90,
+            MUTATED_GENES_TABLE_2: 91,
             STRUCTURAL_VARIANT_GENES_TABLE: 85,
             CNA_GENES_TABLE: 80,
             PATIENT_TREATMENTS_TABLE: 75,
+
             PATIENT_TREATMENT_GROUPS_TABLE: 75,
-            SAMPLE_TREATMENTS_TABLE: 75,
+            
             SAMPLE_TREATMENT_GROUPS_TABLE: 75,
             CANCER_STUDIES: 70,
             SEQUENCED: 60,
             HAS_CNA_DATA: 50,
-            SAMPLE_COUNT: 40,
+            OS_SURVIVAL: 40,
+            AGE: 30,
+            
             MUTATION_COUNT: 30,
             FRACTION_GENOME_ALTERED: 20,
             GENDER: 9,
             SEX: 9,
-            AGE: 9,
+            
             RACE: 8,
             ETHNICITY: 8,
             SAMPLE_TYPE: 8,
